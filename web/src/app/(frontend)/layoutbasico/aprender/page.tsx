@@ -1,23 +1,37 @@
-import ProdutoCards from './criaprodutocard';
-import ProdutoCard from './interfacedosprodutos';
+'use client'
 
-const paotradicional: ProdutoCard = {
-  id: 1,
-  nome: "Pão Tradicional", 
-  preco: 5.00, 
-  quantidade: 0, 
-  descricao: "O mais clássico",
-};
+import type { Metadata } from "next"
+import React from "react"
+import { useState } from "react";
+import Header from "@/components/Header";
+import Carrinho from "@/components/Carrinho";
+import ListaProdutos from "@/components/ListaProdutos";
 
-export default function Page({ children }: Readonly<{ children: React.ReactNode }>) {
+
+
+import { Rubik } from "next/font/google"
+
+
+
+const rubik = Rubik({
+  variable: "--font-rubik",
+  subsets: ["latin"],
+})
+
+
+
+export default function Page() {
+  const [verCarrinho, setVerCarrinho] = useState(false);
+
+  const PageContent = verCarrinho ? <Carrinho /> : <ListaProdutos />;
+
+  console.log("Carrinho:", Carrinho);
+  console.log("ListaProdutos:", ListaProdutos);
+
   return (
     <>
-      <header>
-      </header>
-      <main>
-        <ProdutoCards produto={paotradicional}  />
-        {children}
-      </main>
+      <Header verCarrinho={verCarrinho} setVerCarrinho={setVerCarrinho} />
+      {PageContent}
     </>
   );
 }

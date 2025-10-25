@@ -6,7 +6,6 @@ type NavProps = {
   verCarrinho: boolean;
   setVerCarrinho: React.Dispatch<React.SetStateAction<boolean>>;
 }
-const NavComponent = Nav as unknown as React.ComponentType<NavProps>
 
 type PropsType = {
   verCarrinho : boolean,
@@ -15,7 +14,7 @@ type PropsType = {
 const Header = ({verCarrinho, setVerCarrinho}: PropsType) => {
   return (
     <header className="header">
-      <NavComponent verCarrinho={verCarrinho} setVerCarrinho={setVerCarrinho} />
+      <Nav verCarrinho={verCarrinho} setVerCarrinho={setVerCarrinho} />
       <div>
         <p>Itens: </p>
         <p></p>

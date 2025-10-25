@@ -1,5 +1,5 @@
 import LandingPagesNav from "@/components/nav/InitialNav";
-import Embarcar from "./Embarcar";
+import Entrar from "./Entrar";
 import { headers } from "next/headers";
 import { auth } from "@/auth";
 
@@ -19,16 +19,11 @@ export default async function Home() {
        
 
         <div className="flex flex-col gap-6">
-          <h1 className="font-bold text-5xl">Dogão</h1>
-          <p className="text-xl font-medium [&>span]:text-orange-500 [&>span]:font-bold">
-            Escolha o que <span>te interessa</span> e customize para o seu modo<br/>
-            preferido de aprender, com <span>vídeos</span>, <span>textos</span>, <span>podcasts</span>,<br/>
-            <span>exercícios</span>, <span>simulações</span> e <span>muita interatividade!</span>
-          </p>
+          <h1 className="font-bold text-5xl">Padaria</h1>
         </div>
       </main>
 
-      <Embarcar isLogged={isLogged} />
+      <Entrar />
 
     </div>
   );

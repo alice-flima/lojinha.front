@@ -17,18 +17,6 @@ const rubik = Rubik({
 
 
 
-function App(){
-  const [verCarrinho, setVerCarrinho] = useState(false)
-  const PageContent = verCarrinho? <Carrinho /> : <  ListaProdutos />
-  const content = (
-    <>
-    <Header verCarrinho = {verCarrinho} setVerCarrinho={setVerCarrinho} />
-    {PageContent}
-    </>
-  )
-  return content
-}
-
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -46,3 +34,4 @@ export default function RootLayout({
     </html>
   );
 }
+

@@ -1,5 +1,5 @@
 import prisma from "../db"; 
-import { Compra, Produto, Prisma } from '@/generated/prisma';
+import { Compra, Prisma } from '@/generated/prisma';
 
 interface CriarCompraProdutoData {
     produtoId: string;
@@ -46,7 +46,6 @@ export class CompraService {
         return prisma.compra.findUnique({
             where: { id },
             include: {
-                user: true,
                 produtos: true,
             }
         });

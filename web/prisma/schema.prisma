@@ -32,56 +32,45 @@ model User {
   @@map("user")
 }
 
-model Curso {
-  id        String @id @default(uuid()) @map("_id")
-  name      String
-  descricao String
-  slug      String @unique
 
-  materiasRelacionadas CursoMateriaRelacionada[]
+model Compra {
+  id         String          @id @default(auto()) @map("_id") @db.ObjectId
+  precoTotal Float
+  userId     String
+  produtos   CompraProduto[]
 }
 
-model CursoMateriaRelacionada {
-  id String @id @default(uuid()) @map("_id")
-
-  curso   Curso  @relation(fields: [cursoId], references: [id])
-  cursoId String
-
-  materia   Materia @relation(fields: [materiaId], references: [id])
-  materiaId String
-
-  @@unique([cursoId, materiaId])
+model Produto {
+  id         String             @id @default(auto()) @map("_id") @db.ObjectId
+  nome       String
+  descricao  String
+  preco      Float
+  categorias ProdutoCategoria[]
+  compras    CompraProduto[]
 }
 
-model Materia {
-  id                 String                    @id @default(uuid()) @map("_id")
-  name               String
-  descricao          String
-  cor                String
-  slug               String                    @unique
-  cursosRelacionados CursoMateriaRelacionada[]
+model Categoria {
+  id       String             @id @default(auto()) @map("_id") @db.ObjectId
+  nome     String
+  produtos ProdutoCategoria[]
 }
 
-model Licao {
-  id        String   @id @default(uuid()) @map("_id")
-  name      String
-  descricao String
-  archived  Boolean? @default(false)
-
-  conteudo     Conteudo[]
+model CompraProduto {
+  id        String  @id @default(auto()) @map("_id") @db.ObjectId
+  compra    Compra  @relation(fields: [compraId], references: [id])
+  compraId  String  @db.ObjectId
+  produto   Produto @relation(fields: [produtoId], references: [id])
+  produtoId String  @db.ObjectId
 }
 
-model Conteudo {
-  id       String   @id @default(uuid()) @map("_id")
-  name     String
-  type     String
-  markdown String
-  order    Int      @default(0)
-  archived Boolean? @default(false)
-
-  licao   Licao?  @relation(fields: [licaoId], references: [id])
-  licaoId String?
+model ProdutoCategoria {
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  produto     Produto   @relation(fields: [produtoId], references: [id])
+  produtoId   String    @db.ObjectId
+  categoria   Categoria @relation(fields: [categoriaId], references: [id])
+  categoriaId String    @db.ObjectId
 }
+
 
 // evitar mexer daqui pra baixo:
 model Session {

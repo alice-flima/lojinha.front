@@ -1,5 +1,7 @@
 import ProdutoService from '../../../services/Produtos';
 import { NextRequest, NextResponse } from 'next/server';
+import { produtoSchema } from '@/app/(backend)/schemas/produtos.schema';
+
 
 export async function GET(){
   try{
@@ -13,7 +15,12 @@ export async function GET(){
 export async function POST(request: NextRequest){
   try {
     const data = await request.json();
-    return NextResponse.json(await ProdutoService.create(data));
+    const validationResult = produtoSchema.safeParse(data);
+    if (!validationResult.success) {
+      return NextResponse.json({ error: 'Erro de validação' }, { status: 400 });
+    }
+
+    return NextResponse.json(await ProdutoService.create(validationResult.data));
   }
 catch (error) {
   return NextResponse.json({ error: 'Erro ao criar produto' }, { status: 500 }); 
@@ -24,7 +31,11 @@ export async function PUT(request: NextRequest){
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id') || '';
     const data = await request.json();
-    return NextResponse.json(await ProdutoService.update(id, data));
+    const validationResult = produtoSchema.safeParse(data);
+    if (!validationResult.success) {
+      return NextResponse.json({ error: 'Erro de validação' }, { status: 400 });
+    }
+    return NextResponse.json(await ProdutoService.update(id, validationResult.data));
   }
   catch (error) {
     return NextResponse.json({ error: 'Erro ao atualizar produto' }, { status: 500 }); 

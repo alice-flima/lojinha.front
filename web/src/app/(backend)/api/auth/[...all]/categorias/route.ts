@@ -1,5 +1,6 @@
 import ProdutoCategoriaService from '../../../../services/ProdutoCategoria';
 import { NextRequest, NextResponse } from 'next/server';
+import { categoriaSchema } from '@/app/(backend)/schemas/categoria.schema';
 
 export async function GET(request: NextRequest){
    try{
@@ -15,6 +16,11 @@ export async function GET(request: NextRequest){
 export async function POST(request: NextRequest){
   try {
     const data = await request.json();
+    ///const validationResult = categoriaSchema.safeParse(data);
+
+///        if (!validationResult.success) {
+   ///       return NextResponse.json({ error: 'Erro ao criar categoria' }, { status: 400 });
+      ///  }
     return NextResponse.json(await ProdutoCategoriaService.create(data));
   }
 catch (error) {

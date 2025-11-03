@@ -1,4 +1,3 @@
-import { expo } from "@better-auth/expo";
 import prisma from "../db";
 import { Produto, Prisma } from '@/generated/prisma';
 

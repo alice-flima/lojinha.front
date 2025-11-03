@@ -21,7 +21,7 @@ export class CompraService {
             for (const item of itensCompraProduto) {
                 const precoProduto = precoMap.get(item.produtoId);
                   if(precoProduto){
-                precoTotal += precoProduto; 
+                    precoTotal += precoProduto; 
                   };
             }
             const novaCompra = await tx.compra.create({

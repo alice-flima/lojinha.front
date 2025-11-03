@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import CategoriaService from '../../../../services/categoria';
+import CategoriaService from '../../services/categoria';
 import { categoriaSchema } from "@/app/(backend)/schemas/categoria.schema";
 export async function GET(request: NextRequest) {
   try {

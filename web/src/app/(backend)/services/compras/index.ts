@@ -8,7 +8,6 @@ interface CriarCompraProdutoData {
 export class CompraService {
 
     public async create(userId: string, itensCompraProduto: CriarCompraProdutoData[]): Promise<Compra> {
-        
         return prisma.$transaction(async (tx) => {
             
             const produtoIds = itensCompraProduto.map(item => item.produtoId);
@@ -48,6 +47,18 @@ export class CompraService {
             include: {
                 produtos: true,
             }
+        });
+    }
+    public async getAll(userId: string): Promise<Compra[]> {
+        return prisma.compra.findMany({
+            where: { userId },
+            include: {
+                produtos: {
+                    include: {
+                        produto: true, 
+                    },
+                },
+            },
         });
     }
     public async update(id: string, data: Prisma.CompraUpdateInput): Promise<Compra> {

@@ -1,4 +1,4 @@
-import CompraService from '../../../../services/compras';
+import CompraService from '../../services/compras';
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import { compraSchema } from '@/app/(backend)/schemas/compra.schema';
@@ -7,20 +7,25 @@ import prisma from '@/app/(backend)/services/db';
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
-    const id = searchParams.get('id') || '';
-    const compra = await CompraService.getById(id);
+    const id = searchParams.get('id');
+
+    if (!id) {
+      return NextResponse.json({ error: 'Parâmetro "id" é obrigatório' }, { status: 400 });
+    }
+    const compra = await CompraService.getAll(id); 
+
     return NextResponse.json(compra);
   } catch (error) {
     console.error(error);
     return NextResponse.json({ error: 'Erro ao pesquisar compra' }, { status: 500 });
   }
 }
+
 export async function POST(request: NextRequest) {
   try {
     const session = await auth.api.getSession({
-      headers: request.headers,
+    headers: request.headers,
     });
-
     const user = session?.user;
     if (!user) {
       return NextResponse.json({ error: 'Usuário não autenticado' }, { status: 401 });

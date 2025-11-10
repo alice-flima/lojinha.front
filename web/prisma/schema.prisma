@@ -32,12 +32,20 @@ model User {
   @@map("user")
 }
 
+enum CompraStatus {
+  PENDING
+  PAID
+  SHIPPED
+  DELIVERED
+  CANCELLED
+}
 
 model Compra {
   id         String          @id @default(auto()) @map("_id") @db.ObjectId
   precoTotal Float
   userId     String
   produtos   CompraProduto[]
+  status     CompraStatus    @default(PENDING)
 }
 
 model Produto {

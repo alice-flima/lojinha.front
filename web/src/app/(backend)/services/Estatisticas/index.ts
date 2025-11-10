@@ -12,7 +12,7 @@ export class EstatisticasService{
       },
     },
   });
-  if(compras.length >0){  ///verificca se o usuario já fez alguma compra
+  if(compras.length >0){  ///verificca se o usuario já fez alguma
   
   const todos_produtos = compras.flatMap(compra =>
         compra.produtos.map(cp => cp.produto.nome)

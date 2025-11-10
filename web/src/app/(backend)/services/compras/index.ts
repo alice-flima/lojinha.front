@@ -1,5 +1,6 @@
 import prisma from "../db"; 
-import { Compra, Prisma } from '@/generated/prisma';
+import { Compra, Prisma, CompraStatus } from '@/generated/prisma';
+
 
 interface CriarCompraProdutoData {
     produtoId: string;
@@ -27,6 +28,7 @@ export class CompraService {
                 data: {
                     userId: userId,
                     precoTotal: precoTotal,
+                    status: CompraStatus.PENDING
                 }
             });
             const createProdutoPromises = itensCompraProduto.map(dadosProduto => {

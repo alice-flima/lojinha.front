@@ -5,6 +5,7 @@ import { compraStatusSchema } from '../../schemas/compra.patch.schema';
 import prisma from '@/app/(backend)/services/db';
 import { handleError } from '../errors/Erro';
 import { ZodError } from 'zod';
+import { auth } from '@/auth';
 
 export async function GET(request: NextRequest) {
   try {
@@ -28,8 +29,16 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     
-    const session = { user: { id: "usuario_teste" } };
-    const user = session.user;
+     ////para poder testar as rotas no bruno:
+    const session = await auth.api.getSession({
+    headers: request.headers,
+    });
+    ///const session = { user: { id: "usuario_teste" } };
+    ////const user = session.user;
+    const user = session?.user;
+    if (!user) {
+      return NextResponse.json({ error: 'Usuário não autenticado' }, { status: 401 });
+    }
     
 
     const body = await request.json();

@@ -2,7 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { headers } from "next/headers";
 import { auth } from "../auth";
 
-export async function middleware(req: NextRequest){
+export function api_middleware(param: any) {
+  return async (request: NextRequest) => {
   const session = await auth.api.getSession({
      headers: await headers()
    });
@@ -13,10 +14,12 @@ export async function middleware(req: NextRequest){
  );
  }
  // Continua a request normalmente se autenticado
- return NextResponse.next();
+  return param(request, session.user);
+  };
 }
 
 export const config = {
+  runtime: "nodejs",
   matcher: [
     "/api/compras/:path*",
     "/api/produtos/:path*"

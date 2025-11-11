@@ -3,9 +3,10 @@ import { NextRequest, NextResponse } from 'next/server';
 import { produtoSchema } from '@/app/(backend)/schemas/produtos.schema';
 import { handleError } from '../errors/Erro';
 import { ZodError } from 'zod';
+import { api_middleware } from '@/middleware/auth';
 
 
-export async function GET(){
+export const GET= api_middleware(async (request: any)=> {
   try{
   const produtos = await ProdutoService.getAll();
   return NextResponse.json(produtos);
@@ -14,8 +15,9 @@ export async function GET(){
     const erro = await handleError(error);
     return NextResponse.json(erro, { status: erro.statusCode });
   }
-}
-export async function POST(request: NextRequest){
+});
+
+export const POST = api_middleware(async (request: any)=> {
   try {
     const data = await request.json();
     data.preco = Number(data.preco);
@@ -31,8 +33,8 @@ catch (error) {
     const erro = await handleError(error);
     return NextResponse.json(erro, { status: erro.statusCode });
   }
-}
-export async function PUT(request: NextRequest){
+});
+export const PUT = api_middleware(async (request: any)=> {
   try {
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id') || '';
@@ -54,8 +56,8 @@ export async function PUT(request: NextRequest){
     const erro = await handleError(error);
     return NextResponse.json(erro, { status: erro.statusCode });
   }
-}
-  export async function DELETE(request: NextRequest){
+});
+  export const DELETE = api_middleware(async (request: any)=> {
     try {
       const { searchParams } = new URL(request.url);
       const id = searchParams.get('id') || '';
@@ -69,6 +71,6 @@ export async function PUT(request: NextRequest){
     const erro = await handleError(error);
     return NextResponse.json(erro, { status: erro.statusCode });
   }
-}
+});
 
 

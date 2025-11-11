@@ -11,22 +11,23 @@ const ROUTE_CONFIG = {
     "/perfil",
     "/settings",
   ],
-  
+ 
   // Pages that require ADMIN or SUPER_ADMIN role
   adminRequired: [
     "/admin/**",
   ],
-  
+ 
   redirectIfAuth: [
     "/login",
     "/cadastro",
   ],
-  
+ 
   // Special routes with custom logic
   specialRoutes: [
     "/admin", // Special handling for /admin route
   ]
 };
+
 
 // Helper function to check if path matches any pattern
 function matchesAnyPattern(pathname: string, patterns: string[]): boolean {
@@ -39,27 +40,30 @@ function matchesAnyPattern(pathname: string, patterns: string[]): boolean {
   });
 }
 
+
 function hasRequiredRole(userRole: Role | undefined, requiredRoles: Role[]): boolean {
   if (!userRole) return false;
   return requiredRoles.includes(userRole);
 }
 
+
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
-  
+ 
   const session = await auth.api.getSession({
     headers: await headers()
   });
-  
+ 
   const userRole = session?.role as Role | undefined;
   const isAuthenticated = !!session?.user;
+
 
   // Handle /admin special route
   if (pathname === "/admin") {
     if (!isAuthenticated) {
       return NextResponse.next();
     }
-    
+   
     if (hasRequiredRole(userRole, ["ADMIN", "SUPER_ADMIN"])) {
       // Redirect admin users to dashboard
       return NextResponse.redirect(new URL("/admin/dashboard", request.url));
@@ -69,7 +73,8 @@ export async function middleware(request: NextRequest) {
     }
   }
 
-  
+
+ 
   if (matchesAnyPattern(pathname, ROUTE_CONFIG.redirectIfAuth)) {
     if (isAuthenticated) {
       return NextResponse.redirect(new URL("/aprender", request.url));
@@ -77,17 +82,19 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
+
   if (matchesAnyPattern(pathname, ROUTE_CONFIG.adminRequired)) {
     if (!isAuthenticated) {
       return NextResponse.redirect(new URL("/admin", request.url));
     }
-    
+   
     if (!hasRequiredRole(userRole, ["ADMIN", "SUPER_ADMIN"])) {
       return NextResponse.redirect(new URL("/", request.url));
     }
-    
+   
     return NextResponse.next();
   }
+
 
   if (matchesAnyPattern(pathname, ROUTE_CONFIG.authRequired)) {
     if (!isAuthenticated) {
@@ -96,8 +103,10 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
+
   return NextResponse.next();
 }
+
 
 export const config = {
   runtime: "nodejs",

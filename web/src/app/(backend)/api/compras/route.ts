@@ -6,8 +6,9 @@ import prisma from '@/app/(backend)/services/db';
 import { handleError } from '../errors/Erro';
 import { ZodError } from 'zod';
 import { auth } from '@/auth';
+import { api_middleware } from '@/middleware/auth';
 
-export async function GET(request: NextRequest) {
+export const GET = api_middleware(async (request: any)=> { 
   try {
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');
@@ -24,9 +25,9 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(erro, { status: erro.statusCode });
 
   }
-}
+});
 
-export async function POST(request: NextRequest) {
+export const POST = api_middleware(async (request: any)=> {
   try {
     
      ////para poder testar as rotas no bruno:
@@ -37,7 +38,8 @@ export async function POST(request: NextRequest) {
     ////const user = session.user;
     const user = session?.user;
     if (!user) {
-      return NextResponse.json({ error: 'Usuário não autenticado' }, { status: 401 });
+      const erro = await handleError(new ZodError([]));
+      return NextResponse.json(erro, { status: erro.statusCode });
     }
     
 
@@ -58,8 +60,8 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(erro, { status: erro.statusCode });
 
   }
-}
-export async function PUT(request: NextRequest) {
+});
+export const PUT = api_middleware(async (request: any)=> {
   try {
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id') || '';
@@ -110,8 +112,8 @@ export async function PUT(request: NextRequest) {
     return NextResponse.json(erro, { status: erro.statusCode });
 
   }
-}
-export async function DELETE(request: NextRequest) {
+});
+export const  DELETE = api_middleware(async (request: any)=> {
   try {
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id') || '';
@@ -126,8 +128,8 @@ export async function DELETE(request: NextRequest) {
     return NextResponse.json(erro, { status: erro.statusCode });
 
   }
-}
-export async function PATCH(request: NextRequest) {
+});
+export const PATCH = api_middleware(async (request: any)=> {
   try {
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id') || '';
@@ -152,4 +154,4 @@ export async function PATCH(request: NextRequest) {
     return NextResponse.json(erro, { status: erro.statusCode });
 
   }
-}
+});

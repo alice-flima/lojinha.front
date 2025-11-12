@@ -1,15 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from ".././../../auth"; 
+import { auth } from "./auth"; 
+
 
 export async function middleware(request: NextRequest) {
-  const pathname = request.nextUrl.pathname;
+  const { pathname } = request.nextUrl;
   if (!pathname.startsWith("/api/")) {
-    return NextResponse.next(); 
+    return NextResponse.next();
   }
-
   const session = await auth.api.getSession({
-  headers: request.headers,
-});
+    headers: request.headers,
+  });
 
   if (!session) {
     return NextResponse.json(
@@ -19,7 +19,6 @@ export async function middleware(request: NextRequest) {
   }
   return NextResponse.next();
 }
-
 export const config = {
   runtime: "nodejs",
   matcher: [

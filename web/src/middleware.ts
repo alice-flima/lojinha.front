@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { headers } from "next/headers";
-import { auth } from "./auth";
+import { auth } from "./auth"; 
 import type { Role } from "./generated/prisma";
 
 // Configuration for different page types

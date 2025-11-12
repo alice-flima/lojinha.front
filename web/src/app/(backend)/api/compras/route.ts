@@ -37,7 +37,8 @@ export async function POST(request: NextRequest) {
     ////const user = session.user;
     const user = session?.user;
     if (!user) {
-      return NextResponse.json({ error: 'Usuário não autenticado' }, { status: 401 });
+      const erro = await handleError(new ZodError([]));
+      return NextResponse.json(erro, { status: erro.statusCode });
     }
     
 

@@ -3,6 +3,7 @@ import CategoriaService from '../../services/categoria';
 import { categoriaSchema } from "@/app/(backend)/schemas/categoria.schema";
 import { ZodError } from "zod";
 import { handleError } from "../errors/Erro";
+
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);

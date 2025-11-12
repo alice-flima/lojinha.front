@@ -66,3 +66,4 @@ export const auth = betterAuth({
         "noctiluz://*",
     ]
 });
+

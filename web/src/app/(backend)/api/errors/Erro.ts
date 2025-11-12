@@ -1,6 +1,7 @@
 import { ZodError } from "zod";
 import { BetterAuthError } from "better-auth"
 
+
 export async function handleError(error: unknown){
 if (error instanceof ZodError) {
 return {

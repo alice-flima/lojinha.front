@@ -6,6 +6,8 @@ import prisma from '@/app/(backend)/services/db';
 import { handleError } from '../errors/Erro';
 import { ZodError } from 'zod';
 import { auth } from '@/auth';
+import { sendEmail } from '../../Emails/email.status'; 
+ 
 
 export async function GET(request: NextRequest) {
   try {
@@ -131,26 +133,73 @@ export async function DELETE(request: NextRequest) {
 export async function PATCH(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
-    const id = searchParams.get('id') || '';
+    const id = searchParams.get("id") || "";
+
     if (!id) {
       const erro = await handleError(new ZodError([]));
       return NextResponse.json(erro, { status: erro.statusCode });
     }
+
     const body = await request.json();
-    
     const validationResult = compraStatusSchema.safeParse(body);
 
-   if (!validationResult.success) {
-     const erro = await handleError(new ZodError(validationResult.error.issues));
+    if (!validationResult.success) {
+      const erro = await handleError(
+        new ZodError(validationResult.error.issues)
+      );
       return NextResponse.json(erro, { status: erro.statusCode });
     }
+
     const compraAtualizada = await CompraService.update(id, {
       status: validationResult.data.status,
     });
+    
+    const compra = await prisma.compra.findUnique({
+      where: { id },
+    });
+    if (!compra) {
+      const erro = await handleError(new ZodError([]));
+      return NextResponse.json(erro, { status: erro.statusCode });
+   }
+    const usuario = await prisma.user.findUnique({
+      where: { id: compra?.userId },
+    });
+    if (!usuario) {
+      const erro = await handleError(new ZodError([]));
+      return NextResponse.json(erro, { status: erro.statusCode });
+    }
+    const email: string = usuario.email;
+    const status = compraAtualizada.status;
+
+    let subject = "";
+    let corpo = "";
+
+    if (status === "PAID") {
+      subject = "Pagamento confirmado";
+      corpo = "Seu pedido foi atualizado para PAID";
+
+      await sendEmail(email, subject, corpo);
+    }
+
+    if (status === "SHIPPED") {
+      subject = "Pedido enviado";
+      corpo = "Seu pedido foi atualizado para SHIPPED";
+
+      await sendEmail(email, subject, corpo);
+    }
+
+    if (status === "DELIVERED") {
+      subject = "Pedido entregue";
+      corpo = "Seu pedido foi atualizado para DELIVERED";
+
+      await sendEmail(email, subject, corpo);
+
+    }
+
+  
     return NextResponse.json(compraAtualizada);
   } catch (error) {
     const erro = await handleError(error);
     return NextResponse.json(erro, { status: erro.statusCode });
-
   }
 }

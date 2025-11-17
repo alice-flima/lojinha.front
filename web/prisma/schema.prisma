@@ -55,6 +55,8 @@ model Produto {
   preco      Float
   categorias ProdutoCategoria[]
   compras    CompraProduto[]
+  imagem     String?
+
 }
 
 model Categoria {

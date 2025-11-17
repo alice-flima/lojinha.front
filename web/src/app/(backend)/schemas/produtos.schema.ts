@@ -15,4 +15,6 @@ export const produtoSchema = z.object({
   preco: z
   .number()
   .positive("Preço deve ser positivo"),
+  imagem: z
+  .string().optional(),
 });

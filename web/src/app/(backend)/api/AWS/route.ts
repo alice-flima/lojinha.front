@@ -14,6 +14,7 @@ const client = new S3Client({
 });
 
 export async function GET(request: NextRequest) {
+  try{
   const file = request.nextUrl.searchParams.get("file");
 
   if (!file) {
@@ -34,4 +35,9 @@ export async function GET(request: NextRequest) {
       "Content-Type": "text/plain",
     },
   });
+} catch (error) {
+      const erro = await handleError(error);
+      return NextResponse.json(erro, { status: erro.statusCode });
+  
+    }
 }

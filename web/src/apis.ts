@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "./auth"; 
+import { handleError } from "./app/(backend)/api/errors/Erro";
 
 
 export async function middleware(request: NextRequest) {
@@ -7,15 +8,15 @@ export async function middleware(request: NextRequest) {
   if (!pathname.startsWith("/api/")) {
     return NextResponse.next();
   }
+  try{
   const session = await auth.api.getSession({
     headers: request.headers,
   });
+}
+  catch (error) {
+    const erro = await handleError(error);
+    return NextResponse.json(erro, { status: erro.statusCode });
 
-  if (!session) {
-    return NextResponse.json(
-      { success: false, message: "Usuário não autenticado" },
-      { status: 401 }
-    );
   }
   return NextResponse.next();
 }

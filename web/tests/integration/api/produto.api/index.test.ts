@@ -34,7 +34,7 @@ describe("Rotas de Produto", () => {
           }),
         });
 
-        expect(res.status).toBe(200);
+        expect(res.status).toBe(201);
         const body = await res.json();
 
         expect(body).toHaveProperty("id");

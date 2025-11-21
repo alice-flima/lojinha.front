@@ -164,7 +164,7 @@ describe("Rotas de Compra", () => {
         }),
       });
         const compra = await res.json();
-        expect(res.status).toBe(200);
+        expect(res.status).toBe(201);
         expect(compra.precoTotal).toBe(3.0);
         expect(compra).toHaveProperty("id");
         expect(compra.userId).toBe("kEc9akKbpkUnYUV2tmCaBVYvurEOFSh5");

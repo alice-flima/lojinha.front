@@ -24,7 +24,7 @@ export async function POST(request: NextRequest){
       return NextResponse.json(erro, { status: erro.statusCode });
     }
 
-    return NextResponse.json(await ProdutoService.create(validationResult.data));
+    return NextResponse.json(await ProdutoService.create(validationResult.data), { status: 201 });
   }
 catch (error) {
     const erro = await handleError(error);

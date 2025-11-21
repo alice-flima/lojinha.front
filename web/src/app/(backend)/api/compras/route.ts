@@ -52,7 +52,7 @@ export async function POST(request: NextRequest) {
     const itensCompraProduto = produtos.map((id: string) => ({ produtoId: id }));
 
     const compra = await CompraService.create(user.id, itensCompraProduto);
-    return NextResponse.json(compra);
+    return NextResponse.json(compra, { status: 201 });
   } catch (error) {
     const erro = await handleError(error);
     return NextResponse.json(erro, { status: erro.statusCode });

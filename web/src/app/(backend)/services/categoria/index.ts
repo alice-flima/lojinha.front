@@ -1,7 +1,7 @@
 import prisma from "../db";
 import { Categoria, Prisma } from "@/generated/prisma";
 
-class CategoriaService {
+export class CategoriaService {
   public async create(data: Prisma.CategoriaCreateInput): Promise<Categoria> {
     return prisma.categoria.create({
       data,

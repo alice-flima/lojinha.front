@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import CategoriaService from "../../services/categoria";
 
-describe("CategoriaService", () => {
+describe("CompraService", () => {
   
   it("deve criar uma categoria", async () => {
     const categoria = await CategoriaService.create({

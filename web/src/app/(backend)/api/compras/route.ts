@@ -31,12 +31,9 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     
-     ////para poder testar as rotas no bruno:
     const session = await auth.api.getSession({
     headers: request.headers,
     });
-    ///const session = { user: { id: "usuario_teste" } };
-    ////const user = session.user;
     const user = session?.user;
     if (!user) {
       const erro = await handleError(new ZodError([]));

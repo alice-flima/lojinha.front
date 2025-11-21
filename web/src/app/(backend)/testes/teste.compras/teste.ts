@@ -89,7 +89,7 @@ describe("CompraService", () => {
   });
 
   it("deve buscar todas as compras", async () => {
-    const produto1 = await ProdutoService.create({
+    const produto = await ProdutoService.create({
       nome: "Pão de Queijo",
       descricao: "Direto de Minas",
       preco: 6.0,
@@ -105,7 +105,7 @@ describe("CompraService", () => {
 
     const compra1 = await CompraService.create(
       "kEc9akKbpkUnYUV2tmCaBVYvurEOFSh5",
-      [{ produtoId: produto1.id }]
+      [{ produtoId: produto.id }]
     );
 
     const compra2 = await CompraService.create(

@@ -2,6 +2,17 @@ import { describe, it, expect } from "vitest";
 import { testApiHandler } from "next-test-api-route-handler";
 import * as handler from "@/app/(backend)/api/categorias/route";
 import CategoriaService  from "@/app/(backend)/services/categoria";
+import  ProdutoService  from "@/app/(backend)/services/Produtos";
+import ProdutoCategoria from "@/app/(backend)/services/ProdutoCategoria";
+import prisma from '@/app/(backend)/services/db';
+import { afterEach } from "vitest";
+afterEach(async () => {
+  await prisma.produtoCategoria.deleteMany();
+  await prisma.categoria.deleteMany();
+  await prisma.produto.deleteMany();
+});
+
+
 
 
 
@@ -62,6 +73,13 @@ describe("Rotas de Categoria", () => {
     const categoria1 = await CategoriaService.create({
           nome: "Queijos",
         });
+    const produto = await ProdutoService.create({
+               nome: "Pão",
+               descricao: "Bla",
+               preco: 3,
+               imagem: ""
+         });  
+     const produtoId = produto.id;     
      const categoriaId = categoria1.id;   
       await testApiHandler({
       appHandler: handler,
@@ -77,6 +95,7 @@ describe("Rotas de Categoria", () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           nome: "Paes doces",
+          produtos: [produtoId],
 
         }),
       });
@@ -85,11 +104,19 @@ describe("Rotas de Categoria", () => {
         expect(categoria.id).toBe(categoriaId);
         expect(categoria).toHaveProperty("produtos");
         expect(categoria.nome).toBe("Paes doces");
+        expect(categoria.produtos.map((p: { produtoId: string }) => p.produtoId)).toContain(produto.id);
+
       },
     });
   });
    it("POST /api/categorias cria categoria", async () => {
-
+    const produto = await ProdutoService.create({
+               nome: "Doce",
+               descricao: "Bla",
+               preco: 3,
+               imagem: ""
+         });  
+     const produtoId = produto.id;  
       await testApiHandler({
       appHandler: handler,
       requestPatcher: (req) => {
@@ -104,6 +131,7 @@ describe("Rotas de Categoria", () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           nome: "Queijos",
+          produtos: [produtoId],
 
         }),
       });
@@ -112,6 +140,7 @@ describe("Rotas de Categoria", () => {
         expect(categoria).toHaveProperty("id");
         expect(categoria).toHaveProperty("produtos");
         expect(categoria.nome).toBe("Queijos");
+        expect(categoria.produtos.map((p: { produtoId: string }) => p.produtoId)).toContain(produto.id);
       },
     });
   });

@@ -40,7 +40,10 @@ export async function PUT(request: NextRequest){
       return NextResponse.json(erro, { status: erro.statusCode });
     }
     const data = await request.json();
-    data.preco = Number(data.preco);
+    if (data.preco !== undefined) {
+     data.preco = Number(data.preco);
+    }
+
   
     const validationResult = produtoSchema.safeParse(data);
     if (!validationResult.success) {

@@ -17,4 +17,10 @@ export const produtoSchema = z.object({
   .positive("Preço deve ser positivo"),
   imagem: z
   .string().optional(),
+  categorias: z
+  .array(
+      z.string()
+      .regex(/^[a-fA-F0-9]{24}$/, "Id inválido (ObjectId esperado)")
+    )
+    .optional(),
 });

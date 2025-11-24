@@ -1,36 +1,34 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "./auth"; 
-import { handleError } from "./app/(backend)/api/errors/Erro";
-import { BetterAuthError } from "better-auth";
-import { headers } from "next/headers";
-
+import { authClientEdge } from "./lib/client-edge"; 
 
 export async function apiMiddleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
+
   if (pathname.startsWith("/api/auth")) {
     return NextResponse.next();
   }
 
-  if (!pathname.startsWith("/api/")) {
-    return NextResponse.next();
-  }
-
   try {
-    const session = await auth.api.getSession({
-      headers: await headers(),
+    const { data: session } = await authClientEdge.getSession({
+        fetchOptions: {
+            headers: {
+                cookie: request.headers.get("cookie") || "",
+            }
+        }
     });
 
     if (!session) {
-      const erro = handleError(
-        new BetterAuthError("Usuário não autenticado")
+      return NextResponse.json(
+        { error: "Usuário não autenticado" },
+        { status: 401 }
       );
-      return NextResponse.json(erro, { status: 401 });
     }
-  
-    return NextResponse.next();
 
+    return NextResponse.next();
   } catch (error) {
-    const erro = handleError(error);
-    return NextResponse.json(erro, { status: 500 });
+    return NextResponse.json(
+      { error: "Falha ao validar sessão" },
+      { status: 500 }
+    );
   }
 }

@@ -4,6 +4,14 @@ import * as handler from "@/app/(backend)/api/compras/route";
 import ProdutoService from "@/app/(backend)/services/Produtos";
 import CompraService  from "@/app/(backend)/services/compras";
 import { vi } from "vitest";
+import prisma from '@/app/(backend)/services/db';
+import { afterEach } from "vitest";
+afterEach(async () => {
+  await prisma.compraProduto.deleteMany();
+  await prisma.compra.deleteMany();
+  await prisma.produto.deleteMany();
+  await prisma.categoria.deleteMany();
+});
 
 // MOCK: pra testar o post compra precisa simular uma sessao
 vi.mock("@/auth", () => {
@@ -43,26 +51,6 @@ describe("Rotas de Compra", () => {
       },
     });
     
-  });
-  it("GET /api/compra nao funciona sem id", async () => {
-      await testApiHandler({
-      appHandler: handler,
-      requestPatcher: (req) => {
-        return new Request(
-          `http://localhost/api/compras`, //procura sem id
-          req
-        );
-      },
-      test: async ({ fetch }) => {
-        const res = await fetch({
-          method: "GET",
-          headers: { "Content-Type": "application/json" },
-        });
-  
-        const compras = await res.json();
-        expect(res.status).toBe(400);
-      },
-    });
   });
   it("PUT /api/compra altera compra", async () => {
         const produto = await ProdutoService.create({

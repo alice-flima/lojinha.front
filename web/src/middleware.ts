@@ -1,7 +1,8 @@
+import { NextRequest, NextResponse } from "next/server";
 import { apiMiddleware } from "./apismiddleware";
-import { pagesMiddleware } from "./pagesmiddleware";
-import { NextRequest } from "next/server";
-export async function middleware(request: NextRequest) {
+import { pagesMiddleware} from "./pagesmiddleware"
+
+export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   if (pathname.startsWith("/api/")) {
@@ -10,9 +11,7 @@ export async function middleware(request: NextRequest) {
 
   return pagesMiddleware(request);
 }
+
 export const config = {
-  runtime: "nodejs",
-  matcher: ["/api/:path*", "/((?!_next).*)"],
+  matcher: ["/api/:path*"],
 };
-
-

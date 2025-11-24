@@ -49,20 +49,24 @@ model Compra {
 }
 
 model Produto {
-  id         String             @id @default(auto()) @map("_id") @db.ObjectId
-  nome       String
-  descricao  String
-  preco      Float
-  categorias ProdutoCategoria[]
-  compras    CompraProduto[]
-  imagem     String?
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  nome         String
+  descricao    String
+  preco        Float
+  imagem       String?
 
+  categoriaIDs String[]    @db.ObjectId
+  categorias   Categoria[] @relation("RelacaoProdutoCategoria", fields: [categoriaIDs], references: [id])
+
+  compras      CompraProduto[]
 }
 
 model Categoria {
-  id       String             @id @default(auto()) @map("_id") @db.ObjectId
-  nome     String
-  produtos ProdutoCategoria[]
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  nome       String
+
+  produtoIDs String[]  @db.ObjectId
+  produtos   Produto[] @relation("RelacaoProdutoCategoria", fields: [produtoIDs], references: [id])
 }
 
 model CompraProduto {
@@ -73,13 +77,7 @@ model CompraProduto {
   produtoId String  @db.ObjectId
 }
 
-model ProdutoCategoria {
-  id          String    @id @default(auto()) @map("_id") @db.ObjectId
-  produto     Produto   @relation(fields: [produtoId], references: [id])
-  produtoId   String    @db.ObjectId
-  categoria   Categoria @relation(fields: [categoriaId], references: [id])
-  categoriaId String    @db.ObjectId
-}
+
 
 
 // evitar mexer daqui pra baixo:

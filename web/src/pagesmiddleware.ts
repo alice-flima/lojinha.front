@@ -1,80 +1,58 @@
 import { NextRequest, NextResponse } from "next/server";
-import { headers } from "next/headers";
-import { auth } from "./auth"; 
-import type { Role } from "./generated/prisma";
+import { authClientEdge } from "./lib/client-edge"; 
+import type { Role } from "./generated/prisma"; 
 
-
-// Configuration for different page types
 const ROUTE_CONFIG = {
- authRequired: [
-    "/dashboard",
-    "/perfil",
-    "/settings",
-  ],
- 
-  // Pages that require ADMIN or SUPER_ADMIN role
-  adminRequired: [
-    "/admin/**",
-  ],
- 
-  redirectIfAuth: [
-    "/login",
-    "/cadastro",
-  ],
- 
-  // Special routes with custom logic
-  specialRoutes: [
-    "/admin", // Special handling for /admin route
-  ]
+  authRequired: ["/dashboard", "/perfil", "/settings"],
+  adminRequired: ["/admin/**"],
+  redirectIfAuth: ["/login", "/cadastro"],
+  specialRoutes: ["/admin"],
 };
 
+interface UserWithRole {
+  role?: Role;
+  id?: string;
+  email?: string;
+  [key: string]: unknown;
+}
 
-// Helper function to check if path matches any pattern
 function matchesAnyPattern(pathname: string, patterns: string[]): boolean {
   return patterns.some(pattern => {
-    if (pattern.endsWith('**')) {
-      const basePattern = pattern.slice(0, -2);
-      return pathname.startsWith(basePattern);
-    }
+    if (pattern.endsWith('**')) return pathname.startsWith(pattern.slice(0, -2));
     return pathname === pattern || pathname.startsWith(pattern + '/');
   });
 }
-
 
 function hasRequiredRole(userRole: Role | undefined, requiredRoles: Role[]): boolean {
   if (!userRole) return false;
   return requiredRoles.includes(userRole);
 }
 
-
 export async function pagesMiddleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
- 
-  const session = await auth.api.getSession({
-    headers: await headers()
+
+  const { data: session } = await authClientEdge.getSession({
+    fetchOptions: {
+      headers: {
+        cookie: request.headers.get("cookie") || "",
+      },
+    },
   });
- 
-  const userRole = session?.role as Role | undefined;
+
+  const user = session?.user as UserWithRole | undefined;
+  const userRole = user?.role;
   const isAuthenticated = !!session?.user;
 
-
-  // Handle /admin special route
   if (pathname === "/admin") {
-    if (!isAuthenticated) {
-      return NextResponse.next();
-    }
-   
+    if (!isAuthenticated) return NextResponse.next();
+    
     if (hasRequiredRole(userRole, ["ADMIN", "SUPER_ADMIN"])) {
-      // Redirect admin users to dashboard
       return NextResponse.redirect(new URL("/admin/dashboard", request.url));
     } else {
-      // Redirect non-admin authenticated users to home
       return NextResponse.redirect(new URL("/", request.url));
     }
   }
 
-
- 
   if (matchesAnyPattern(pathname, ROUTE_CONFIG.redirectIfAuth)) {
     if (isAuthenticated) {
       return NextResponse.redirect(new URL("/aprender", request.url));
@@ -82,19 +60,15 @@ export async function pagesMiddleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-
   if (matchesAnyPattern(pathname, ROUTE_CONFIG.adminRequired)) {
     if (!isAuthenticated) {
       return NextResponse.redirect(new URL("/admin", request.url));
     }
-   
     if (!hasRequiredRole(userRole, ["ADMIN", "SUPER_ADMIN"])) {
       return NextResponse.redirect(new URL("/", request.url));
     }
-   
     return NextResponse.next();
   }
-
 
   if (matchesAnyPattern(pathname, ROUTE_CONFIG.authRequired)) {
     if (!isAuthenticated) {
@@ -103,14 +77,5 @@ export async function pagesMiddleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-
   return NextResponse.next();
 }
-
-
-export const config = {
-  runtime: "nodejs",
-  matcher: [
-    "/((?!api|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt).*)",
-  ],
-};

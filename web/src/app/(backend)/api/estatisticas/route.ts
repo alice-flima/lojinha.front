@@ -1,7 +1,6 @@
-import EstatisticasService from '../../services/Estatisticas';
+import EstatisticasService from '../../services/Estatisticas'; 
 import { NextRequest, NextResponse } from 'next/server';
 import { handleError } from '../errors/Erro';
-import { ZodError } from 'zod';
 
 export async function GET(request: NextRequest) {
   try {
@@ -9,8 +8,10 @@ export async function GET(request: NextRequest) {
     const userId = searchParams.get('id');
 
     if (!userId) {
-      const erro = await handleError(new ZodError([]));
-      return NextResponse.json(erro, { status: erro.statusCode });
+      return NextResponse.json(
+        { message: "O parâmetro 'id' é obrigatório na URL" },
+        { status: 400 } 
+      );
     }
 
     const dados = await EstatisticasService.dados(userId);
@@ -24,7 +25,8 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(estatisticas);
 
   } catch (error) {
+    
     const erro = await handleError(error);
-    return NextResponse.json(erro, { status: erro.statusCode });
+    return NextResponse.json(erro, { status: erro.statusCode || 500 });
   }
 }

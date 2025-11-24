@@ -7,4 +7,5 @@ export const categoriaSchema = z.object({
     .min(1, "Nome deve ter pelo menos 1 caractere")
     .max(30, "Nome deve ter no máximo 30 caracteres")
     .regex(/^[a-zA-ZÀ-ÿ\s]+$/, "Nome deve conter apenas letras e espaços"),
+  produtos: z.array(z.string()).optional()  
 });

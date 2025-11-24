@@ -1,7 +1,13 @@
 import { describe, it, expect } from "vitest";
 import CompraService from "@/app/(backend)/services/compras";
 import ProdutoService from "@/app/(backend)/services/Produtos";
-
+import prisma from '@/app/(backend)/services/db';
+import { afterEach } from "vitest";
+afterEach(async () => {
+  await prisma.categoria.deleteMany();
+  await prisma.produto.deleteMany();
+  await prisma.categoria.deleteMany();
+});
 describe("CompraService", () => {
   it("deve criar uma compra", async () => {
     const produto = await ProdutoService.create({

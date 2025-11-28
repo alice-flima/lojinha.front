@@ -50,7 +50,7 @@ model Compra {
 
 model Produto {
   id           String   @id @default(auto()) @map("_id") @db.ObjectId
-  nome         String
+  nome         String   @unique
   descricao    String
   preco        Float
   imagem       String?
@@ -63,7 +63,7 @@ model Produto {
 
 model Categoria {
   id         String   @id @default(auto()) @map("_id") @db.ObjectId
-  nome       String
+  nome       String   @unique
 
   produtoIDs String[]  @db.ObjectId
   produtos   Produto[] @relation("RelacaoProdutoCategoria", fields: [produtoIDs], references: [id])

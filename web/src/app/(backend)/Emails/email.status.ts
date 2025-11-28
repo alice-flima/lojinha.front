@@ -7,6 +7,7 @@ import { NextResponse } from "next/server";
 const resend = new Resend(process.env.RESEND_API_KEY);
 export async function sendEmail(to: string, subject: string, body: string){
   try {
+    console.log("funcao chamada");
     const { data, error } = await resend.emails.send({
       from: "Acme <onboarding@resend.dev>",
 
@@ -16,14 +17,14 @@ export async function sendEmail(to: string, subject: string, body: string){
     });
     
     if (error) {
-      const erro = await handleError(error);
-      return NextResponse.json(erro, { status: erro.statusCode });
+      console.log("erro API Resend"); 
+      const erroPadronizado = await handleError(error);
+      throw erroPadronizado; 
     }
-
+    console.log("enviado")
     return data;
   } catch (error) {
-      const erro = await handleError(error);
-      return NextResponse.json(erro, { status: erro.statusCode });
-  
-    }
+    const erroPadronizado = await handleError(error);
+    throw erroPadronizado; 
+  }
 }

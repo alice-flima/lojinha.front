@@ -1,6 +1,6 @@
 import prisma from "../db";
 import { Produto } from "@/generated/prisma";
-
+////interface para nao usar any no tipo
 interface IProdutoInput {
   nome: string;
   descricao: string;
@@ -8,7 +8,7 @@ interface IProdutoInput {
   imagem?: string | null;
   categorias?: string[];
 }
-
+////omite a categoria para poder repassar uma lista de strings no lugar- ids em vez de objetos
 export interface ProdutoDTO extends Omit<Produto, 'categorias'> {
   categorias: string[];
 }
@@ -20,7 +20,7 @@ type ProdutoDoBanco = Produto & {
 export class ProdutoService {
   
   public async create(data: IProdutoInput): Promise<ProdutoDTO> {
-    const { categorias, ...dadosPrisma } = data;
+    const { categorias, ...dadosPrisma } = data; ///separa categorias do resto
     const categoriasIds = categorias ?? [];
 
     const produto = await prisma.produto.create({
@@ -28,7 +28,7 @@ export class ProdutoService {
         ...dadosPrisma,
         categorias: categoriasIds.length > 0
           ? {
-              connect: categoriasIds.map((id) => ({ id }))
+              connect: categoriasIds.map((id) => ({ id })) ///conecta as categorias
             }
           : undefined
       },
@@ -81,6 +81,19 @@ export class ProdutoService {
   }
 
   public async delete(id: string): Promise<ProdutoDTO> {
+    const produtoDesconectado = await prisma.produto.update({
+    where: {
+      id: id,
+    },
+    data: {
+      categorias: {
+        set: []
+      },
+    },
+    include: {
+      categorias: { select: { id: true } }
+    }
+  }); ///com as conexoes com as categorias desfeitas, pode deletar o produto
     const produto = await prisma.produto.delete({
       where: { id },
       include: {

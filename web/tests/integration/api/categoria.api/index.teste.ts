@@ -3,9 +3,10 @@ import { testApiHandler } from "next-test-api-route-handler";
 import * as handler from "@/app/(backend)/api/categorias/route";
 import CategoriaService  from "@/app/(backend)/services/categoria";
 import  ProdutoService  from "@/app/(backend)/services/Produtos";
-import ProdutoCategoria from "@/app/(backend)/services/ProdutoCategoria";
 import prisma from '@/app/(backend)/services/db';
 import { afterEach } from "vitest";
+
+
 afterEach(async () => {
   await prisma.categoria.deleteMany();
   await prisma.produto.deleteMany();

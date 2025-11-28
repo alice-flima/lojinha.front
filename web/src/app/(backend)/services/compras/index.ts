@@ -12,6 +12,7 @@ export class CompraService {
         return prisma.$transaction(async (tx) => {
             
             const produtoIds = itensCompraProduto.map(item => item.produtoId);
+            
             const produtos = await tx.produto.findMany({ 
                 where: { id: { in: produtoIds } },
                 select: { id: true, preco: true }

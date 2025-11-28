@@ -91,6 +91,19 @@ export class CategoriaService {
   }
 
   public async delete(id: string): Promise<CategoriaDTO> {
+    const categoriaDesconectada = await prisma.categoria.update({
+    where: {
+      id: id,
+    },
+    data: {
+      produtos: {
+        set: []
+      },
+    },
+    include: {
+      produtos: { select: { id: true } }
+    }
+  }); ///com as conexoes com os produtos desfeitas, pode deletar a categoria
     const categoria = await prisma.categoria.delete({
       where: { id },
       include: {

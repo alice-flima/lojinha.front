@@ -56,14 +56,28 @@ export async function POST(request: NextRequest) {
     }
 
     const { produtos } = validationResult.data;
-    const itensCompraProduto = produtos.map((id: string) => ({ produtoId: id }));
-
+    const itensCompraProduto = produtos.map((id: string) => ({ produtoId: id })); ///array com id: "id"
+    const produtoIds = itensCompraProduto.map(item => item.produtoId); ///array de ids
+            const produtosEncontrados = await prisma.produto.findMany({ ///checa se todos os produtos sao validos
+               where: {
+                id: {
+                  in: produtoIds, 
+                 },
+               },
+              select: { id: true }, 
+              });
+            if (produtosEncontrados.length < produtoIds.length){ ///se nao encontrar todos os produtos colocados na compra, tem um produto inexistente e a compra noa é feita
+              const erro = await handleError(new ZodError([]));
+              return NextResponse.json(erro, { status: erro.statusCode });
+            }  
+          
     const compra = await CompraService.create(user.id, itensCompraProduto);
     return NextResponse.json(compra, { status: 201 });
   } catch (error) {
     const erro = await handleError(error);
     return NextResponse.json(erro, { status: erro.statusCode });
   }
+
 }
 
 export async function PUT(request: NextRequest) {
@@ -85,7 +99,20 @@ export async function PUT(request: NextRequest) {
     }
 
     const { produtos } = validationResult.data;
-    const itensCompraProduto = produtos.map((id: string) => ({ produtoId: id }));
+    const itensCompraProduto = produtos.map((id: string) => ({ produtoId: id })); ///array com id: "id"
+    const produtoIds = itensCompraProduto.map(item => item.produtoId); ///array de ids
+            const produtosEncontrados = await prisma.produto.findMany({ ///checa se todos os produtos sao validos
+               where: {
+                id: {
+                  in: produtoIds, 
+                 },
+               },
+              select: { id: true }, 
+              });
+            if (produtosEncontrados.length < produtoIds.length){ ///se nao encontrar todos os produtos colocados na compra, tem um produto inexistente e a compra noa é feita
+              const erro = await handleError(new ZodError([]));
+              return NextResponse.json(erro, { status: erro.statusCode });
+            }  
     
     const produtosInfo = await prisma.produto.findMany({
       where: { id: { in: produtos } },
@@ -196,7 +223,6 @@ export async function PATCH(request: NextRequest) {
 
     let subject = "";
     let corpo = "";
-
     if (status === "PAID") {
       subject = "Pagamento confirmado";
       corpo = "Seu pedido foi atualizado para PAID";
